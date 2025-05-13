@@ -1,6 +1,7 @@
-# User Preferences Management System
+![image](https://github.com/user-attachments/assets/f680cf1f-084d-44b9-9761-e90b0ed22829)
 
-A Node.js-based web application that allows users to register, login, and manage their preferences including allergies, cuisine preferences, nutritional requirements, and additional notes.
+A Node.js-based web application that allows users to register, login, and manage their preferences including allergies, cuisine
+preferences, nutritional requirements to make a delicious dish from the limited ingredients they may have.
 
 ## Features
 
