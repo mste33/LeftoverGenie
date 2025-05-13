@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to LeftoverGenie</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .welcome-container {
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .welcome-logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .welcome-message {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .welcome-description {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 40px;
+            line-height: 1.8;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .btn-start {
+            background-color: #0d6efd;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            transition: transform 0.2s;
+        }
+        .btn-start:hover {
+            background-color: #0b5ed7;
+            transform: scale(1.05);
+        }
+        .highlight {
+            color: #0d6efd;
+            font-weight: 600;
+        }
+        .questionnaire-container {
+            display: none;
+            text-align: left;
+        }
+        .question {
+            margin-bottom: 25px;
+        }
+        .question label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .question input, .question select, .question textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .question textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            transition: transform 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <div class="welcome-logo">🍳</div>
+        
+        <!-- Welcome Content -->
+        <div id="welcomeContent">
+            <h1 class="welcome-title">Welcome to LeftoverGenie!</h1>
+            <p class="welcome-message">We're excited to have you join our community of creative cooks!</p>
+            
+            <div class="welcome-description">
+                <p>LeftoverGenie is your personal culinary assistant that transforms your available ingredients into delicious meal possibilities. Whether you're looking to:</p>
+                <ul>
+                    <li>Discover new recipes based on what you have</li>
+                    <li>Find creative ways to use leftover ingredients</li>
+                    <li>Get personalized meal suggestions</li>
+                    <li>Learn cooking techniques and tips</li>
+                </ul>
+                <p>We're here to help you make the most of your ingredients and expand your cooking horizons!</p>
+            </div>
+
+            <p class="mb-4">Before you get started, we'd like to know a bit more about your cooking preferences.</p>
+            
+            <button class="btn btn-start" onclick="startQuestions()">Answer Questions</button>
+        </div>
+
+        <!-- Questionnaire Content -->
+        <div id="questionnaireContent" class="questionnaire-container">
+            <h1 class="welcome-title">Tell Us About Your Cooking Preferences</h1>
+            <p class="welcome-message">This will help us provide you with the best recipe suggestions!</p>
+            
+            <form id="preferencesForm">
+                <div class="question">
+                    <label for="allergies">Are you allergic to any foods? If not, please type "none".</label>
+                    <textarea id="allergies" name="allergies" placeholder="List your allergies or type 'none'"></textarea>
+                </div>
+
+                <div class="question">
+                    <label for="cuisine">What are your preferred cuisines?</label>
+                    <textarea id="cuisine" name="cuisine" placeholder="Enter your favorite cuisines (e.g., Italian, Mexican, Japanese, etc.)"></textarea>
+                </div>
+
+                <div class="question">
+                    <label for="nutrition">What are your nutritional goals?</label>
+                    <select id="nutrition" name="nutrition">
+                        <option value="balanced">Balanced Diet</option>
+                        <option value="low-carb">Low Carb</option>
+                        <option value="high-protein">High Protein</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="keto">Keto</option>
+                        <option value="paleo">Paleo</option>
+                    </select>
+                </div>
+
+                <div class="question">
+                    <label for="additional">Would you like to add anything else about your cooking preferences or ingredients?</label>
+                    <textarea id="additional" name="additional" placeholder="Share any additional preferences, restrictions, or favorite ingredients..."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">Back</button>
+                    <button type="submit" class="btn btn-start">Save Preferences</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Get username
+        function getUsername() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('username') || localStorage.getItem('username');
+        }
+        
+        // Check if user has preferences
+        async function checkPreferences() {
+            const username = getUsername();
+            
+            if (!username) {
+                // If no username, redirect to login
+                window.location.href = '/';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/check-preferences?username=${username}`);
+                const data = await response.json();
+                
+                if (!data.hasPreferences) {
+                    // Show welcome content and questionnaire button
+                    document.getElementById('welcomeContent').style.display = 'block';
+                    document.getElementById('questionnaireContent').style.display = 'none';
+                } else {
+                    // Load existing preferences and redirect to chat
+                    try {
+                        const prefsResponse = await fetch(`/get-preferences?username=${username}`);
+                        if (prefsResponse.ok) {
+                            const preferences = await prefsResponse.json();
+                            const params = new URLSearchParams({
+                                username: username,
+                                allergies: preferences.allergies,
+                                cuisine: preferences.cuisine,
+                                nutrition: preferences.nutrition,
+                                additional: preferences.additional
+                            });
+                            window.location.href = `/chat.html?${params.toString()}`;
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('Error loading preferences:', error);
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking preferences:', error);
+                document.getElementById('welcomeContent').style.display = 'block';
+                document.getElementById('questionnaireContent').style.display = 'none';
+            }
+        }
+        
+        function startQuestions() {
+            document.getElementById('welcomeContent').style.display = 'none';
+            document.getElementById('questionnaireContent').style.display = 'block';
+        }
+        
+        function goBack() {
+            document.getElementById('welcomeContent').style.display = 'block';
+            document.getElementById('questionnaireContent').style.display = 'none';
+        }
+        
+        // Check preferences when page loads
+        window.addEventListener('load', checkPreferences);
+
+        document.getElementById('preferencesForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                username: getUsername(),
+                allergies: document.getElementById('allergies').value,
+                cuisine: document.getElementById('cuisine').value.split(',').map(c => c.trim()).filter(c => c),
+                nutrition: document.getElementById('nutrition').value,
+                additional: document.getElementById('additional').value
+            };
+
+            try {
+                // Send preferences to backend
+                const response = await fetch('/save-preferences', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save preferences');
+                }
+
+                // Create URL parameters from form data for chat page
+                const params = new URLSearchParams({
+                    username: formData.username,
+                    allergies: formData.allergies,
+                    cuisine: formData.cuisine.join(','),
+                    nutrition: formData.nutrition,
+                    additional: formData.additional
+                });
+                
+                // Redirect to chat page with preferences
+                window.location.href = `/chat.html?${params.toString()}`;
+            } catch (error) {
+                console.error('Error saving preferences:', error);
+                alert('There was an error saving your preferences. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html> 

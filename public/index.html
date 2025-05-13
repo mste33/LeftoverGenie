@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeftoverGenie — Turn whatever's in your fridge into a delicious meal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .site-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+        .site-title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .site-title p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        .auth-container {
+            max-width: 400px;
+            width: 100%;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        .toggle-form a {
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .form-text {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        .logo {
+            font-size: 3rem;
+            color: #0d6efd;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="site-title">
+            <div class="logo">🍳</div>
+            <h1>LeftoverGenie</h1>
+            <p>Turn whatever's in your fridge into a delicious meal</p>
+        </div>
+        
+        <div class="auth-container">
+            <!-- Login Form  -->
+            <div id="loginForm">
+                <h2 class="text-center mb-4">Login</h2>
+                <div id="loginError" class="alert alert-danger" style="display: none;"></div>
+                <form id="loginFormElement" onsubmit="return handleLogin(event)">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="username" placeholder="Username" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" name="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <div class="toggle-form">
+                    Don't have an account? <a href="#" onclick="showSignup()">Sign up</a>
+                </div>
+            </div>
+
+            <!-- Signup Form  -->
+            <div id="signupForm" style="display: none;">
+                <h2 class="text-center mb-4">Create Account</h2>
+                <div id="signupError" class="alert alert-danger" style="display: none;"></div>
+                <form id="signupFormElement" onsubmit="return handleSignup(event)">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="username" placeholder="Username" required>
+                        <div class="form-text">Username can only contain letters and digits</div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" name="password" placeholder="Password" required>
+                        <div class="form-text">Password must be at least 4 characters long and contain at least one letter and one digit</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                </form>
+                <div class="toggle-form">
+                    Already have an account? <a href="#" onclick="showLogin()">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSignup() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: formData.get('username'),
+                        password: formData.get('password')
+                    })
+                });
+
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    const error = await response.text();
+                    const errorDiv = document.getElementById('loginError');
+                    errorDiv.textContent = error;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                const errorDiv = document.getElementById('loginError');
+                errorDiv.textContent = 'An error occurred during login. Please try again.';
+                errorDiv.style.display = 'block';
+            }
+            
+            return false;
+        }
+
+        async function handleSignup(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: formData.get('username'),
+                        password: formData.get('password')
+                    })
+                });
+
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    const error = await response.text();
+                    const errorDiv = document.getElementById('signupError');
+                    errorDiv.textContent = error;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                const errorDiv = document.getElementById('signupError');
+                errorDiv.textContent = 'An error occurred during signup. Please try again.';
+                errorDiv.style.display = 'block';
+            }
+            
+            return false;
+        }
+    </script>
+</body>
+</html> 

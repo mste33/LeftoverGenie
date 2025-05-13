@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeftoverGenie Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@5.0.2/marked.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .main-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            height: 80vh;
+        }
+        .info-card {
+            width: 300px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .info-header {
+            padding: 15px;
+            background-color: #0d6efd;
+            color: white;
+            text-align: center;
+        }
+        .info-content {
+            padding: 15px;
+        }
+        .info-section {
+            margin-bottom: 20px;
+        }
+        .info-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .info-section p {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .chat-container {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .preferences-card {
+            width: 300px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .preferences-header {
+            padding: 15px;
+            background-color: #0d6efd;
+            color: white;
+            text-align: center;
+        }
+        .preferences-content {
+            padding: 15px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .preferences-section {
+            margin-bottom: 20px;
+        }
+        .preferences-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .preferences-section p {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .preferences-section .edit-btn {
+            margin-top: 10px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .preferences-section .edit-btn:hover {
+            background-color: #5a6268;
+        }
+        .preferences-section .save-btn {
+            margin-top: 10px;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: none;
+        }
+        .preferences-section .save-btn:hover {
+            background-color: #0b5ed7;
+        }
+        .preferences-section .cancel-btn {
+            margin-top: 10px;
+            margin-left: 5px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: none;
+        }
+        .preferences-section .cancel-btn:hover {
+            background-color: #c82333;
+        }
+        .preferences-section textarea, .preferences-section select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+            display: none;
+        }
+        .preferences-section .preference-value {
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+            position: relative;
+        }
+        .logout-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+        .user-message {
+            margin-left: auto;
+            background-color: #0d6efd;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 15px 15px 0 15px;
+        }
+        .bot-message {
+            margin-right: auto;
+            background-color: #f1f1f1;
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 15px 15px 15px 0;
+        }
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .chat-input button:hover {
+            background-color: #0b5ed7;
+        }
+        .chat-input button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .footer .logout-btn {
+            position: static;
+            transform: none;
+            display: inline-block;
+            padding: 10px 30px;
+            font-size: 1rem;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+            }
+            .info-card, .preferences-card {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            .chat-container {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="info-card">
+            <div class="info-header">
+                <h3>About LeftoverGenie</h3>
+            </div>
+            <div class="info-content">
+                <div class="info-section">
+                    <h4>Welcome to LeftoverGenie!</h4>
+                    <p>LeftoverGenie is your personal culinary assistant that transforms your available ingredients into delicious meal possibilities.</p>
+                    <p>Whether you're looking to:</p>
+                    <ul>
+                        <li>Discover new recipes based on what you have in your fridge</li>
+                        <li>Find creative ways to use leftover ingredients</li>
+                        <li>Get personalized meal suggestions</li>
+                        <li>Learn cooking techniques and tips</li>
+                    </ul>
+                    <p>We're here to help you make the most of your ingredients and expand your cooking horizons!</p>
+                </div>
+                
+                <div class="info-section">
+                    <h4>How to Use</h4>
+                    <p>Simply type your questions or requests in the chat box. You can ask about:</p>
+                    <ul>
+                        <li>Recipe suggestions based on ingredients in your fridge</li>
+                        <li>Cooking tips and techniques</li>
+                        <li>Ingredient substitutions</li>
+                        <li>Meal planning</li>
+                        <li>Kitchen equipment advice</li>
+                        <li>Food storage tips</li>
+                        <li>Cooking measurements and conversions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>LeftoverGenie Chat</h2>
+                <p class="text-muted">Ask me anything about cooking and recipes!</p>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    Hello! I'm your LeftoverGenie assistant. How can I help you with cooking today?
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="userInput" placeholder="Type your message here..." autocomplete="off">
+                <button onclick="sendMessage()" id="sendButton">Send</button>
+            </div>
+        </div>
+        
+        <div class="preferences-card">
+            <div class="preferences-header">
+                <h3>Your Preferences</h3>
+            </div>
+            <div class="preferences-content">
+                <div class="preferences-section" id="allergies-section">
+                    <h4>Allergies</h4>
+                    <div class="preference-value" id="allergies-value">Loading...</div>
+                    <textarea id="allergies-edit" placeholder="List your allergies or type 'none'"></textarea>
+                    <button class="edit-btn" onclick="toggleEdit('allergies')">Edit</button>
+                    <button class="save-btn" onclick="savePreference('allergies')">Save</button>
+                    <button class="cancel-btn" onclick="cancelEdit('allergies')">Cancel</button>
+                </div>
+                
+                <div class="preferences-section" id="cuisine-section">
+                    <h4>Preferred Cuisines</h4>
+                    <div class="preference-value" id="cuisine-value">Loading...</div>
+                    <textarea id="cuisine-edit" placeholder="Enter your favorite cuisines (e.g., Italian, Mexican, Japanese, etc.)"></textarea>
+                    <button class="edit-btn" onclick="toggleEdit('cuisine')">Edit</button>
+                    <button class="save-btn" onclick="savePreference('cuisine')">Save</button>
+                    <button class="cancel-btn" onclick="cancelEdit('cuisine')">Cancel</button>
+                </div>
+                
+                <div class="preferences-section" id="nutrition-section">
+                    <h4>Nutritional Goals</h4>
+                    <div class="preference-value" id="nutrition-value">Loading...</div>
+                    <select id="nutrition-edit">
+                        <option value="balanced">Balanced Diet</option>
+                        <option value="low-carb">Low Carb</option>
+                        <option value="high-protein">High Protein</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="keto">Keto</option>
+                        <option value="paleo">Paleo</option>
+                    </select>
+                    <button class="edit-btn" onclick="toggleEdit('nutrition')">Edit</button>
+                    <button class="save-btn" onclick="savePreference('nutrition')">Save</button>
+                    <button class="cancel-btn" onclick="cancelEdit('nutrition')">Cancel</button>
+                </div>
+                
+                <div class="preferences-section" id="additional-section">
+                    <h4>Additional Preferences</h4>
+                    <div class="preference-value" id="additional-value">Loading...</div>
+                    <textarea id="additional-edit" placeholder="Share any additional preferences, restrictions, or favorite ingredients..."></textarea>
+                    <button class="edit-btn" onclick="toggleEdit('additional')">Edit</button>
+                    <button class="save-btn" onclick="savePreference('additional')">Save</button>
+                    <button class="cancel-btn" onclick="cancelEdit('additional')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        // Replace with your Google API key
+        const API_KEY = 'YOUR_API_KEY_HERE';
+        const MODEL = 'gemini-2.0-flash';
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+
+        // Get user preferences 
+        const urlParams = new URLSearchParams(window.location.search);
+        let userPreferences = {
+            allergies: urlParams.get('allergies') || 'none',
+            cuisine: urlParams.get('cuisine') || '',
+            nutrition: urlParams.get('nutrition') || '',
+            additional: urlParams.get('additional') || ''
+        };
+
+        // Get username from URL
+        function getUsername() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('username') || localStorage.getItem('username');
+        }
+
+        // Load preferences from server
+        async function loadPreferencesFromServer() {
+            const username = getUsername();
+            if (!username) return;
+
+            try {
+                const response = await fetch(`/get-preferences?username=${username}`);
+                if (!response.ok) {
+                    throw new Error('Failed to load preferences');
+                }
+                
+                const serverPreferences = await response.json();
+                userPreferences = serverPreferences;
+                displayPreferences();
+                updateSystemPrompt();
+            } catch (error) {
+                console.error('Error loading preferences:', error);
+            }
+        }
+
+        // Display user preferences in the card
+        function displayPreferences() {
+            document.getElementById('allergies-value').textContent = userPreferences.allergies;
+            document.getElementById('cuisine-value').textContent = userPreferences.cuisine || 'Not specified';
+            document.getElementById('nutrition-value').textContent = userPreferences.nutrition || 'Not specified';
+            document.getElementById('additional-value').textContent = userPreferences.additional || 'Not specified';
+            
+            // Set values in edit fields
+            document.getElementById('allergies-edit').value = userPreferences.allergies;
+            document.getElementById('cuisine-edit').value = userPreferences.cuisine;
+            document.getElementById('nutrition-edit').value = userPreferences.nutrition;
+            document.getElementById('additional-edit').value = userPreferences.additional;
+        }
+
+        // Toggle edit mode for a preference
+        function toggleEdit(preference) {
+            const valueElement = document.getElementById(`${preference}-value`);
+            const editElement = document.getElementById(`${preference}-edit`);
+            const editBtn = valueElement.parentElement.querySelector('.edit-btn');
+            const saveBtn = valueElement.parentElement.querySelector('.save-btn');
+            const cancelBtn = valueElement.parentElement.querySelector('.cancel-btn');
+            
+            valueElement.style.display = 'none';
+            editElement.style.display = 'block';
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'inline-block';
+            cancelBtn.style.display = 'inline-block';
+        }
+
+        // Cancel editing a preference
+        function cancelEdit(preference) {
+            const valueElement = document.getElementById(`${preference}-value`);
+            const editElement = document.getElementById(`${preference}-edit`);
+            const editBtn = valueElement.parentElement.querySelector('.edit-btn');
+            const saveBtn = valueElement.parentElement.querySelector('.save-btn');
+            const cancelBtn = valueElement.parentElement.querySelector('.cancel-btn');
+            
+            valueElement.style.display = 'block';
+            editElement.style.display = 'none';
+            editBtn.style.display = 'inline-block';
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+        }
+
+        // Save a preference
+        async function savePreference(preference) {
+            const editElement = document.getElementById(`${preference}-edit`);
+            const value = editElement.value;
+            
+            userPreferences[preference] = value;
+            
+            document.getElementById(`${preference}-value`).textContent = value || 'Not specified';
+            
+            try {
+                const response = await fetch('/save-preferences', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: getUsername(),
+                        allergies: userPreferences.allergies,
+                        cuisine: userPreferences.cuisine,
+                        nutrition: userPreferences.nutrition,
+                        additional: userPreferences.additional
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save preferences');
+                }
+                
+                // Exit edit mode
+                cancelEdit(preference);
+                
+                // Update system prompt for future messages
+                updateSystemPrompt();
+            } catch (error) {
+                console.error('Error saving preferences:', error);
+                alert('There was an error saving your preferences. Please try again.');
+            }
+        }
+    //updated
+        function updateSystemPrompt() {
+            systemPrompt = `You are LeftoverGenie, a helpful cooking assistant. The user has provided the following preferences:
+- Allergies: ${userPreferences.allergies}
+- Preferred Cuisines: ${userPreferences.cuisine}
+- Nutritional Goals: ${userPreferences.nutrition}
+- Additional Preferences: ${userPreferences.additional}
+
+Please keep these preferences in mind when suggesting recipes and cooking advice. You should:
+1. Never suggest recipes with ingredients the user is allergic to
+2. Prioritize cuisines they prefer
+3. Consider their nutritional goals
+4. Take into account any additional preferences they've mentioned
+
+IMPORTANT RULES FOR RECIPE SUGGESTIONS:
+1. When a user lists their ingredients, ALWAYS try to suggest creative recipes using EXACTLY those ingredients. Be innovative and think outside the box.
+2. If a user asks for a specific recipe using their listed ingredients, provide the recipe using ONLY those ingredients, being as creative as possible.
+3. Only in extremely rare cases where it's truly impossible to make any dish (like having only one non-edible ingredient), say: "I'm sorry, but it's not possible to make a complete recipe with just [list ingredients]. Here's why: [explanation]."
+4. If suggesting additional ingredients, do so only after providing a creative recipe with the existing ingredients.
+5. Never suggest recipes that require ingredients the user hasn't mentioned having.
+6. Be creative and resourceful - even simple ingredients can make delicious meals!
+7. When providing a recipe, ALWAYS mention how it aligns with the user's preferences. For example:
+   - If they have allergies, mention that the recipe is safe for their specific allergies
+   - If they prefer certain cuisines, mention if the recipe matches their preferred cuisine style
+   - If they have nutritional goals, explain how the recipe supports those goals
+   - If they have additional preferences, mention how the recipe accommodates those preferences
+
+RECIPE FORMAT:
+When providing a recipe, use this structure:
+1. Recipe name
+2. How it aligns with user preferences
+3. Ingredients (only those provided by the user)
+4. Instructions
+5. Optional: Tips or variations
+
+You are knowledgeable about cooking techniques, ingredients, and recipes. You can help with:
+- Recipe suggestions based on available ingredients
+- Cooking tips and techniques
+- Ingredient substitutions
+- Meal planning
+- Kitchen equipment advice
+- Food storage tips
+- Cooking measurements and conversions
+
+IMPORTANT: You should ONLY answer questions that are related to cooking, recipes, food, and kitchen-related topics. If a question is not related to these topics, politely inform the user that you can only help with cooking-related questions and suggest they ask something about cooking, recipes, or food instead.
+
+Please be friendly, professional, and concise in your responses.`;
+        }
+
+        // Default system prompt
+        let systemPrompt = `You are LeftoverGenie, a helpful cooking assistant. The user has provided the following preferences:
+- Allergies: ${userPreferences.allergies}
+- Preferred Cuisines: ${userPreferences.cuisine}
+- Nutritional Goals: ${userPreferences.nutrition}
+- Additional Preferences: ${userPreferences.additional}
+
+Please keep these preferences in mind when suggesting recipes and cooking advice. You should:
+1. Never suggest recipes with ingredients the user is allergic to
+2. Prioritize cuisines they prefer
+3. Consider their nutritional goals
+4. Take into account any additional preferences they've mentioned
+
+IMPORTANT RULES FOR RECIPE SUGGESTIONS:
+1. When a user lists their ingredients, ALWAYS try to suggest creative recipes using EXACTLY those ingredients. Be innovative and think outside the box.
+2. If a user asks for a specific recipe using their listed ingredients, provide the recipe using ONLY those ingredients, being as creative as possible.
+3. Only in extremely rare cases where it's truly impossible to make any dish (like having only one non-edible ingredient), say: "I'm sorry, but it's not possible to make a complete recipe with just [list ingredients]. Here's why: [explanation]."
+4. If suggesting additional ingredients, do so only after providing a creative recipe with the existing ingredients.
+5. Never suggest recipes that require ingredients the user hasn't mentioned having.
+6. Be creative and resourceful - even simple ingredients can make delicious meals!
+7. When providing a recipe, ALWAYS mention how it aligns with the user's preferences. For example:
+   - If they have allergies, mention that the recipe is safe for their specific allergies
+   - If they prefer certain cuisines, mention if the recipe matches their preferred cuisine style
+   - If they have nutritional goals, explain how the recipe supports those goals
+   - If they have additional preferences, mention how the recipe accommodates those preferences
+
+RECIPE FORMAT:
+When providing a recipe, use this structure:
+1. Recipe name
+2. How it aligns with user preferences
+3. Ingredients (only those provided by the user)
+4. Instructions
+5. Optional: Tips or variations
+
+You are knowledgeable about cooking techniques, ingredients, and recipes. You can help with:
+- Recipe suggestions based on available ingredients
+- Cooking tips and techniques
+- Ingredient substitutions
+- Meal planning
+- Kitchen equipment advice
+- Food storage tips
+- Cooking measurements and conversions
+
+IMPORTANT: You should ONLY answer questions that are related to cooking, recipes, food, and kitchen-related topics. If a question is not related to these topics, politely inform the user that you can only help with cooking-related questions and suggest they ask something about cooking, recipes, or food instead.
+
+Please be friendly, professional, and concise in your responses.`;
+
+        // Add conversation history array
+        let conversationHistory = [];
+
+        // Handle Enter key
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Disable input while processing
+            userInput.value = '';
+            userInput.disabled = true;
+            sendButton.disabled = true;
+
+            // Add user message to chat and history
+            addMessage(message, 'user');
+            conversationHistory.push({ role: 'user', content: message });
+
+            try {
+                const fullContext = systemPrompt + "\n\nConversation History:\n" + 
+                    conversationHistory.map(msg => `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`).join('\n');
+
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + MODEL + ':generateContent?key=' + API_KEY, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: fullContext
+                            }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    const botResponse = data.candidates[0].content.parts[0].text;
+                    addMessage(botResponse, 'bot');
+                    // Add bot response to history
+                    conversationHistory.push({ role: 'assistant', content: botResponse });
+                } else {
+                    addMessage("I'm sorry, I couldn't process that request. Please try again.", 'bot');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage("I'm sorry, there was an error processing your request. Please try again.", 'bot');
+            }
+
+            userInput.disabled = false;
+            sendButton.disabled = false;
+            userInput.focus();
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            // Use DOMPurify 
+            const sanitizedHtml = DOMPurify.sanitize(marked.parse(text));
+            messageDiv.innerHTML = sanitizedHtml;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Initialize preferences display
+        displayPreferences();
+        
+        // Load preferences from server
+        loadPreferencesFromServer();
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('username');
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html> 
