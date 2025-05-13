@@ -55,32 +55,6 @@ touch data/user_preferences.txt
 
 > Note: The `node_modules` directory is not included in the repository as it contains all the installed dependencies. It will be created automatically when you run `npm install`.
 
-## API Endpoints
-
-### Authentication
-- `POST /register` - Register a new user
-  - Body: `{ username, password }`
-  - Requirements:
-    - Username: alphanumeric only
-    - Password: minimum 4 characters, at least one letter and one digit
-
-- `POST /login` - User login
-  - Body: `{ username, password }`
-  - Returns: Redirects to dashboard on success
-
-### Preferences Management
-- `GET /check-preferences` - Check if user has saved preferences
-  - Query: `username`
-  - Returns: `{ hasPreferences: boolean }`
-
-- `POST /save-preferences` - Save user preferences
-  - Body: `{ username, allergies, cuisine, nutrition, additional }`
-  - Returns: `{ success: boolean }`
-
-- `GET /get-preferences` - Retrieve user preferences
-  - Query: `username`
-  - Returns: `{ allergies, cuisine, nutrition, additional }`
-
 ## Running the Application
 
 1. Start the server:
