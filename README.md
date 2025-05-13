@@ -24,8 +24,8 @@ Before running this application, make sure you have the following installed:
 
 1. Clone the repository:
 ```bash
-git clone [your-repository-url]
-cd [repository-name]
+git clone https://github.com/mste33/LeftoverGenie.git
+cd LeftoverGenie
 ```
 
 2. Install dependencies:
@@ -119,6 +119,6 @@ This project is licensed under the ISC License.
 
 ## Contact
 
-[Your Name] - [Your Email]
+mste33 - [https://github.com/mste33]
 
-Project Link: [https://github.com/yourusername/your-repo-name] 
+Project Link: https://github.com/mste33/LeftoverGenie 
